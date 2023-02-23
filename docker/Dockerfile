@@ -1,28 +1,17 @@
-####
-# This Dockerfile is used in order to build a container that runs the Spring Boot application
-#
-# Build the image with:
-#
-# docker build -f docker/Dockerfile -t springboot/sample-demo .
-#
-# Then run the container using:
-#
-# docker run -i --rm -p 8081:8081 springboot/sample-demo
-####
 FROM quay.io/devfile/maven:3.8.1-openjdk-17-slim
 
-WORKDIR /build
-
-# Build dependency offline to streamline build
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
-ENV APP_HOME=/usr/app/
+ENV APP_HOME=/build
 WORKDIR $APP_HOME
 
 RUN mkdir -p /tmp/cache
 COPY . /tmp/cache/
 RUN cp -r /tmp/cache/* $APP_HOME && rm -rf /tmp/cache/*
+
+
+# Build dependency offline to streamline build
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
 
 
 COPY src src
